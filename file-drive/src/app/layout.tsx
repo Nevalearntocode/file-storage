@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import ConvexClientProvider from "@/providers/convex-client-provider";
 import Header from "./_components/header";
 import { Toaster } from "@/components/ui/sonner";
+import { OrganizationProvider } from "@/contexts/organization-context";
+import ModalProvider from "@/providers/modal-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +24,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("", inter.className)}>
         <ConvexClientProvider>
-          <Header />
-          <Toaster />
-          {children}
+          <OrganizationProvider>
+            <Toaster />
+            <ModalProvider />
+            <Header />
+            {children}
+          </OrganizationProvider>
         </ConvexClientProvider>
       </body>
     </html>

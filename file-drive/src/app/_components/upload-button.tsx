@@ -2,7 +2,6 @@
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { useOrganization, useUser } from "@clerk/nextjs";
 
 import {
   Dialog,
@@ -30,6 +29,7 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useOrganizationContext } from "@/contexts/organization-context";
 
 type Props = {};
 
@@ -43,14 +43,9 @@ const formSchema = z.object({
 type FormType = z.infer<typeof formSchema>;
 
 const UploadButton = (props: Props) => {
-  const organization = useOrganization();
-  const user = useUser();
+  const organization = useOrganizationContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  let orgId: string | undefined = undefined;
-  if (organization.isLoaded && user.isLoaded) {
-    orgId = organization.organization?.id ?? user.user?.id;
-  }
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const createFile = useMutation(api.files.createFile);
 
@@ -66,9 +61,11 @@ const UploadButton = (props: Props) => {
   const fileRef = form.register("file");
 
   const onSubmit = async (data: FormType) => {
-    if (!orgId) {
+    if (!organization) {
       return;
     }
+
+    const { orgId } = organization;
 
     const file = data.file?.[0];
 
