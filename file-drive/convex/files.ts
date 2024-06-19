@@ -60,7 +60,8 @@ export const createFile = mutation(
 
 export const getFiles = query({
     args: {
-        orgId: v.string()
+        orgId: v.string(),
+        query: v.optional(v.string())
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity()
@@ -74,10 +75,17 @@ export const getFiles = query({
         if (!hasAccess) {
             return []
         }
-
         // Query the "files" table for documents where the "orgId" field matches
         // the "orgId" argument passed to the function. Return the documents as an array.
-        return await ctx.db.query("files").withIndex("by_orgId", q => q.eq("orgId", args.orgId)).collect()
+        const files = await ctx.db.query("files").withIndex("by_orgId", q => q.eq("orgId", args.orgId)).collect()
+        const query = args.query
+
+        if (query) {
+            return files.filter(file => file.name.includes(query))
+        } else {
+            return files
+        }
+
     }
 })
 

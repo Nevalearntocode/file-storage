@@ -14,6 +14,7 @@ import CardAction from "./card-action";
 import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import Loading from "../loading";
 
 type Props = {
   file: Doc<"files">;
@@ -27,7 +28,7 @@ const typeIcons = {
 };
 
 const FileCard = ({ file }: Props) => {
-  const imageUrl = useQuery(api.files.generateImageUrl, {
+  const fileUrl = useQuery(api.files.generateImageUrl, {
     fileId: file.fileId,
   });
 
@@ -42,18 +43,29 @@ const FileCard = ({ file }: Props) => {
           <CardAction fileId={file._id} orgId={file.orgId} />
         </div>
       </CardHeader>
-      <CardContent className="h-full">
-        <div className="relative flex h-full">
+      <CardContent className="h-full items-center">
+        <div className="relative flex h-full min-h-[200px]">
           {file.type === "image" && (
-            <Image
-              alt={file.name}
-              fill
-              src={imageUrl ?? ""}
-              className="aspect-auto rounded-xl border-2"
-            />
+            <>
+              {!fileUrl ? (
+                <div className="flex items-center w-full justify-center">
+                  <Loading />
+                </div>
+              ) : (
+                <Image
+                  priority
+                  alt={file.name}
+                  fill
+                  sizes="(100vw - 2rem) 200px"
+                  src={fileUrl ? fileUrl : "/blank.svg"}
+                  className="aspect-auto rounded-xl border-2"
+                />
+              )}
+            </>
           )}
           {file.type !== "image" && (
             <Image
+              priority
               alt={file.name}
               width={200}
               height={200}
@@ -64,7 +76,9 @@ const FileCard = ({ file }: Props) => {
         </div>
       </CardContent>
       <CardFooter className="mt-auto flex">
-        <Button>Download</Button>
+        <Button onClick={() => window.open(fileUrl ?? "", "_blank")}>
+          Download
+        </Button>
       </CardFooter>
     </Card>
   );

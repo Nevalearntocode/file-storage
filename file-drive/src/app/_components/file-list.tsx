@@ -7,14 +7,17 @@ import { useOrganizationContext } from "@/contexts/organization-context";
 import FileCard from "./file-card";
 import EmptyState from "../empty-state";
 import Loading from "../loading";
+import { useSearchParams } from "next/navigation";
 
 type Props = {};
 
 const FileList = (props: Props) => {
   const organization = useOrganizationContext();
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('search')
   const files = useQuery(
     api.files.getFiles,
-    organization ? { orgId: organization.orgId } : "skip",
+    organization ? { orgId: organization.orgId, query: searchQuery ?? undefined } : "skip",
   );
 
   if(!files){
