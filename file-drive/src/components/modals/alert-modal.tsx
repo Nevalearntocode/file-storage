@@ -12,9 +12,8 @@ import React from "react";
 
 type Props = {};
 
-const AlertModal = ({}: Props) => {
-  const { isOpen, data, onClose } = useAlertModal();
-
+const Alert = ({}: Props) => {
+  const { data, isOpen, onClose } = useAlertModal();
   const { onConfirm, message } = data;
 
   return (
@@ -25,11 +24,16 @@ const AlertModal = ({}: Props) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
+          <AlertDialogAction
+            onClick={onConfirm}
+            className="bg-rose-500 transition hover:bg-rose-600"
+          >
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 };
 
-export default AlertModal;
+export default Alert;

@@ -30,6 +30,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useOrganizationContext } from "@/contexts/organization-context";
+import { typeConverter } from "@/lib/utils";
 
 type Props = {};
 
@@ -81,10 +82,12 @@ const UploadButton = (props: Props) => {
         },
       });
       const storageId = result.data.storageId;
+
       await createFile({
         name: data.name,
         orgId,
         fileId: storageId,
+        type: typeConverter(file.type),
       });
       form.reset();
       setIsModalOpen(false);

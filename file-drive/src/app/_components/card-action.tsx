@@ -9,14 +9,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { useAlertModal } from "@/hooks/use-alert-modal";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-type Props = {};
+type Props = {
+  fileId: Id<"files">;
+  orgId: string;
+};
 
-const CardAction = (props: Props) => {
+const CardAction = ({ fileId, orgId }: Props) => {
+  const deleteFile = useMutation(api.files.deleteFile)
   const { onOpen } = useAlertModal();
   const message = "Are you sure you want to delete this file?";
-  const onConfirm = () => {
-    console.log("delete");
+  const onConfirm = async() => {
+    await deleteFile({ fileId, orgId })
   };
 
   return (
