@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import Loading from "../loading";
+import {format} from 'date-fns'
 
 type Props = {
   file: Doc<"files">;
@@ -75,10 +76,13 @@ const FileCard = ({ file }: Props) => {
           )}
         </div>
       </CardContent>
-      <CardFooter className="mt-auto flex">
+      <CardFooter className="mt-auto flex items-center justify-between">
         <Button onClick={() => window.open(fileUrl ?? "", "_blank")}>
           Download
         </Button>
+        <p className="italic text-xs">
+          {format(file._creationTime, "dd/MM/yyyy")}
+        </p>
       </CardFooter>
     </Card>
   );

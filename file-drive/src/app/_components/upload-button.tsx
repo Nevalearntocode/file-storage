@@ -61,6 +61,10 @@ const UploadButton = (props: Props) => {
   const isLoading = form.formState.isSubmitting;
   const fileRef = form.register("file");
 
+  const onLogData = (data: FormType) => {
+    console.log(data);
+  };
+
   const onSubmit = async (data: FormType) => {
     if (!organization) {
       return;
@@ -88,6 +92,7 @@ const UploadButton = (props: Props) => {
         orgId,
         fileId: storageId,
         type: typeConverter(file.type),
+        size: file.size,
       });
       form.reset();
       setIsModalOpen(false);

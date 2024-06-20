@@ -71,14 +71,17 @@ const SearchBar = (props: Props) => {
                 <Input
                   placeholder="Search..."
                   {...field}
-                  className="focus-visible:ring-offset-0"
+                  className="pr-20 focus-visible:ring-offset-0"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="absolute right-0" variant={`ghost`}>
+        <Button
+          className="absolute right-12 focus-visible:ring-offset-0"
+          variant={`ghost`}
+        >
           <Search className="h-4 w-4" />
         </Button>
       </form>
