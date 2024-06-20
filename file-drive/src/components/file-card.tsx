@@ -29,7 +29,7 @@ const typeIcons = {
 };
 
 const FileCard = ({ file }: Props) => {
-  const fileUrl = useQuery(api.files.generateImageUrl, {
+  const fileUrl = useQuery(api.utils.generateImageUrl, {
     fileId: file.fileId,
   });
 

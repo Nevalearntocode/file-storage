@@ -9,9 +9,11 @@ import EmptyState from "../app/empty-state";
 import Loading from "../app/loading";
 import { useSearchParams } from "next/navigation";
 
-type Props = {};
+type Props = {
+  isFavorite?: boolean;
+};
 
-const FileList = (props: Props) => {
+const FileList = ({ isFavorite = false }: Props) => {
   const organization = useOrganizationContext();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search");
@@ -26,6 +28,7 @@ const FileList = (props: Props) => {
       ? {
           orgId: organization.orgId,
           searchQuery: searchQuery ?? undefined,
+          isFavorite,
         }
       : "skip",
   );

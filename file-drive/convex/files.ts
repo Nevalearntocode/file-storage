@@ -42,6 +42,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     searchQuery: v.optional(v.string()),
+    isFavorite: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -66,6 +67,7 @@ export const getFiles = query({
       .collect();
 
     const searchQuery = args.searchQuery;
+    const isFavorite = args.isFavorite;
 
     if (searchQuery) {
       files = await ctx.db
@@ -74,6 +76,19 @@ export const getFiles = query({
           q.search("name", searchQuery).eq("orgId", args.orgId),
         )
         .collect();
+    }
+
+    if (isFavorite) {
+      const favoriteFiles = await ctx.db
+        .query("favorites")
+        .withIndex("by_userId_orgId_fileId", (q) =>
+          q.eq("userId", hasAccess.user._id).eq("orgId", args.orgId),
+        )
+        .collect();
+
+      files = files.filter((file) =>
+        favoriteFiles.some((favorite) => favorite.fileId === file._id),
+      );
     }
 
     return files;
@@ -95,15 +110,6 @@ export const deleteFile = mutation({
     const { file } = hasAccess;
 
     await ctx.db.delete(file._id);
-  },
-});
-
-export const generateImageUrl = query({
-  args: {
-    fileId: v.id("_storage"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.storage.getUrl(args.fileId);
   },
 });
 
@@ -163,4 +169,4 @@ export const isFavorite = query({
 
     return !!favorite;
   },
-})
+});
