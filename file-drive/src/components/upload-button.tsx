@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 
 import { useMutation } from "convex/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";

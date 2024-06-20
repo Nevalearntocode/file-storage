@@ -9,13 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowDown, ArrowUp, Check, Filter, FilterX } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
 type Props = {};
 
 const FilterBar = (props: Props) => {
   const searchParams = useSearchParams();
+  const router = useRouter()
   const nameSort = searchParams.get("name");
   const sizeSort = searchParams.get("size");
   const dateSort = searchParams.get("date");
@@ -86,6 +87,7 @@ const FilterBar = (props: Props) => {
     url.searchParams.delete("date");
     url.searchParams.delete("name");
     url.searchParams.delete("type");
+    url.searchParams.delete("search");
     setSizeAscending(null);
     setDateAscending(null);
     setNameAscending(null);
@@ -128,6 +130,7 @@ const FilterBar = (props: Props) => {
           {dateAscending === true && <ArrowDown className="ml-2 h-4 w-4" />}
           {dateAscending === false && <ArrowUp className="ml-2 h-4 w-4" />}
         </DropdownMenuItem>
+        <DropdownMenuSeparator className="my-2" />
         <DropdownMenuItem
           className="flex items-center justify-between"
           onClick={() => handleFileTypeFilter("image")}
@@ -156,7 +159,6 @@ const FilterBar = (props: Props) => {
           SVG
           {currentType === "svg" && <Check className="ml-2 h-4 w-4" />}
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="my-2" />
         <DropdownMenuItem className="cursor-pointer" onClick={handleRemoveSort}>
           Remove filter
           <FilterX className="ml-2 h-4 w-4 opacity-80" />

@@ -7,6 +7,7 @@ import Header from "./_components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { OrganizationProvider } from "@/contexts/organization-context";
 import ModalProvider from "@/providers/modal-provider";
+import Sidebar from "./_components/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,10 @@ export default function RootLayout({
             <Toaster />
             <ModalProvider />
             <Header />
-            {children}
+            <main className="container mx-auto flex pt-12 gap-8">
+              <Sidebar />
+              {children}
+            </main>
           </OrganizationProvider>
         </ConvexClientProvider>
       </body>

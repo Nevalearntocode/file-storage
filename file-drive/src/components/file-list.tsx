@@ -2,13 +2,12 @@
 
 import { useQuery } from "convex/react";
 import React from "react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { useOrganizationContext } from "@/contexts/organization-context";
 import FileCard from "./file-card";
-import EmptyState from "../empty-state";
-import Loading from "../loading";
+import EmptyState from "../app/empty-state";
+import Loading from "../app/loading";
 import { useSearchParams } from "next/navigation";
-import { Doc } from "../../../convex/_generated/dataModel";
 
 type Props = {};
 
@@ -21,18 +20,12 @@ const FileList = (props: Props) => {
   const dateSort = searchParams.get("date");
   const fileType = searchParams.get("type");
 
-  console.log(nameSort, sizeSort, dateSort, fileType);
-
   const files = useQuery(
     api.files.getFiles,
     organization
       ? {
           orgId: organization.orgId,
           searchQuery: searchQuery ?? undefined,
-          fileType: (fileType as Doc<"files">["type"]) ?? undefined,
-          nameSort: nameSort as "asc" | "desc" ?? undefined,
-          sizeSort: sizeSort as "asc" | "desc" ?? undefined,
-          dateSort: dateSort as "asc" | "desc" ?? undefined,
         }
       : "skip",
   );
@@ -41,13 +34,49 @@ const FileList = (props: Props) => {
     return <Loading />;
   }
 
-  if (files.length === 0) {
+  let data = files;
+
+  if (fileType) {
+    data = data.filter((file) => file.type === fileType);
+  }
+
+  if (nameSort) {
+    data = data.sort((a, b) => {
+      if (nameSort === "asc") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    });
+  }
+
+  if (sizeSort) {
+    data = data.sort((a, b) => {
+      if (sizeSort === "asc") {
+        return a.size - b.size;
+      } else {
+        return b.size - a.size;
+      }
+    });
+  }
+
+  if (dateSort) {
+    data = data.sort((a, b) => {
+      if (dateSort === "asc") {
+        return a._creationTime - b._creationTime;
+      } else {
+        return b._creationTime - a._creationTime;
+      }
+    });
+  }
+
+  if (data.length === 0) {
     return <EmptyState />;
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {files.map((file) => (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {data.map((file) => (
         <FileCard key={file._id} file={file} />
       ))}
     </div>

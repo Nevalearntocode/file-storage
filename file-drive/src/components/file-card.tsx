@@ -1,7 +1,7 @@
 "use client";
 
 import React, { use } from "react";
-import { Doc } from "../../../convex/_generated/dataModel";
+import { Doc } from "../../convex/_generated/dataModel";
 import {
   Card,
   CardFooter,
@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import CardAction from "./card-action";
 import Image from "next/image";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import Loading from "../loading";
-import {format} from 'date-fns'
+import { api } from "../../convex/_generated/api";
+import Loading from "../app/loading";
+import { format } from "date-fns";
 
 type Props = {
   file: Doc<"files">;
@@ -49,7 +49,7 @@ const FileCard = ({ file }: Props) => {
           {file.type === "image" && (
             <>
               {!fileUrl ? (
-                <div className="flex items-center w-full justify-center">
+                <div className="flex w-full items-center justify-center">
                   <Loading />
                 </div>
               ) : (
@@ -80,7 +80,7 @@ const FileCard = ({ file }: Props) => {
         <Button onClick={() => window.open(fileUrl ?? "", "_blank")}>
           Download
         </Button>
-        <p className="italic text-xs">
+        <p className="text-xs italic">
           {format(file._creationTime, "dd/MM/yyyy")}
         </p>
       </CardFooter>

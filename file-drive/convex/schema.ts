@@ -16,8 +16,16 @@ export default defineSchema({
     size: v.number(),
     type: fileTypes,
   })
-    .index("by_orgId", ["orgId"]),
-
+    .index("by_orgId", ["orgId"])
+    .searchIndex("by_name", {
+      searchField: "name",
+      filterFields: ["orgId"],
+    }),
+  favorites: defineTable({
+    orgId: v.string(),
+    fileId: v.id("files"),
+    userId: v.id("users"),
+  }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]),
   users: defineTable({
     tokenIdentifier: v.string(),
     orgIds: v.array(v.string()),
