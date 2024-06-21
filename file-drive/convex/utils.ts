@@ -3,6 +3,8 @@ import { getUser } from "./users";
 import { Id } from "./_generated/dataModel";
 import { ConvexError, v } from "convex/values";
 
+export const userPrefix = "user"
+export const orgPrefix = "org"
 
 export const generateImageUrl = query({
   args: {
@@ -64,7 +66,7 @@ export async function hasAccessToOrg(
     return null;
   }
 
-  const isOrgMember = user.orgIds.includes(orgId);
+  const isOrgMember = user.orgs.some((orgId) => orgId === orgId);
   const isPersonalAccount = user.tokenIdentifier.includes(orgId);
   const hasAccess = isOrgMember || isPersonalAccount;
 

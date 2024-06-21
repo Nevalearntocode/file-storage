@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { fileTypes } from "./schema";
 import { mutation, query } from "./_generated/server";
-import { hasAccessToFile, hasAccessToOrg } from "./utils";
+import { hasAccessToFile, hasAccessToOrg, orgPrefix, userPrefix } from "./utils";
 
 export const createFile = mutation({
   args: {
@@ -107,7 +107,23 @@ export const deleteFile = mutation({
       throw new ConvexError("You do not have access to this file");
     }
 
-    const { file } = hasAccess;
+    const { file, user } = hasAccess;
+
+    if(args.orgId.startsWith(orgPrefix)){
+      const hasDeletePermission = user.orgs.find((org) => org.orgId === args.orgId)?.role === "admin";
+
+      if(!hasDeletePermission){
+        throw new ConvexError("You do not have permission to delete this file");
+      }
+    }
+
+    if(args.orgId.startsWith(userPrefix)){
+      const hasDeletePermission = user._id === args.orgId
+
+      if(!hasDeletePermission){
+        throw new ConvexError("You do not have permission to delete this file");
+      }
+    }
 
     await ctx.db.delete(file._id);
   },

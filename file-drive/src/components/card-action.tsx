@@ -13,6 +13,8 @@ import { useAlertModal } from "@/hooks/use-alert-modal";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { Protect } from "@clerk/nextjs";
+import { userPrefix } from "../../convex/utils";
 
 type Props = {
   fileId: Id<"files">;
@@ -52,14 +54,28 @@ const CardAction = ({ fileId, orgId }: Props) => {
           )}
           Favorite
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer text-rose-500 focus:text-rose-600"
-          onClick={() => onOpen({ onConfirm, message })}
-        >
-          <Trash className="mr-2 h-5 w-5" />
-          Delete
-        </DropdownMenuItem>
+        <Protect role="org:admin" fallback={<></>}>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer text-rose-500 focus:text-rose-600"
+            onClick={() => onOpen({ onConfirm, message })}
+          >
+            <Trash className="mr-2 h-5 w-5" />
+            Delete
+          </DropdownMenuItem>
+        </Protect>
+        {orgId.startsWith(userPrefix) && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer text-rose-500 focus:text-rose-600"
+              onClick={() => onOpen({ onConfirm, message })}
+            >
+              <Trash className="mr-2 h-5 w-5" />
+              Delete
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

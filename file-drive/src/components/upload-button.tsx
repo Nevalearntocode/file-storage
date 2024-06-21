@@ -47,7 +47,7 @@ const UploadButton = (props: Props) => {
   const organization = useOrganizationContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const generateUploadUrl = useMutation(api.utils.generateUploadUrl);
   const createFile = useMutation(api.files.createFile);
 
   const form = useForm<FormType>({

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
 import { Doc } from "../../convex/_generated/dataModel";
 import {
   Card,
@@ -29,7 +29,7 @@ const typeIcons = {
 };
 
 const FileCard = ({ file }: Props) => {
-  const fileUrl = useQuery(api.utils.generateImageUrl, {
+const fileUrl = useQuery(api.utils.generateImageUrl, {
     fileId: file.fileId,
   });
 

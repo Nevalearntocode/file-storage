@@ -8,6 +8,8 @@ export const fileTypes = v.union(
   v.literal("svg"),
 );
 
+export const role = v.union(v.literal("admin"), v.literal("member"));
+
 export default defineSchema({
   files: defineTable({
     name: v.string(),
@@ -26,8 +28,9 @@ export default defineSchema({
     fileId: v.id("files"),
     userId: v.id("users"),
   }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]),
+  
   users: defineTable({
     tokenIdentifier: v.string(),
-    orgIds: v.array(v.string()),
+    orgs: v.array(v.object({ orgId: v.string(), role: role })),
   }).index("by_tokenIdentifier", ["tokenIdentifier"]),
 });
