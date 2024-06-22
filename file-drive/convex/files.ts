@@ -1,7 +1,13 @@
 import { ConvexError, v } from "convex/values";
 import { fileTypes } from "./schema";
-import { mutation, query } from "./_generated/server";
-import { hasAccessToFile, hasAccessToOrg, orgPrefix, userPrefix } from "./utils";
+import { internalMutation, mutation, query } from "./_generated/server";
+import {
+  hasAccessToFile,
+  hasAccessToOrg,
+  orgPrefix,
+  route,
+  userPrefix,
+} from "./utils";
 
 export const createFile = mutation({
   args: {
@@ -34,6 +40,7 @@ export const createFile = mutation({
       fileId: args.fileId,
       type: args.type,
       size: args.size,
+      userId: hasAccess.user._id
     });
   },
 });
@@ -42,7 +49,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     searchQuery: v.optional(v.string()),
-    isFavorite: v.optional(v.boolean()),
+    route: route,
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -67,7 +74,8 @@ export const getFiles = query({
       .collect();
 
     const searchQuery = args.searchQuery;
-    const isFavorite = args.isFavorite;
+    const isFavorite = args.route === "favorites";
+    const isArchived = args.route === "archived";
 
     if (searchQuery) {
       files = await ctx.db
@@ -91,11 +99,17 @@ export const getFiles = query({
       );
     }
 
+    if (isArchived) {
+      files = files.filter((file) => file.archived);
+    } else {
+      files = files.filter((file) => !file.archived);
+    }
+
     return files;
   },
 });
 
-export const deleteFile = mutation({
+export const toggleArchiveFile = mutation({
   args: {
     orgId: v.string(),
     fileId: v.id("files"),
@@ -109,23 +123,55 @@ export const deleteFile = mutation({
 
     const { file, user } = hasAccess;
 
-    if(args.orgId.startsWith(orgPrefix)){
-      const hasDeletePermission = user.orgs.find((org) => org.orgId === args.orgId)?.role === "admin";
+    if (args.orgId.startsWith(orgPrefix)) {
+      const hasDeletePermission =
+        user.orgs.find((org) => org.orgId === args.orgId)?.role === "admin";
 
-      if(!hasDeletePermission){
+      if (!hasDeletePermission) {
         throw new ConvexError("You do not have permission to delete this file");
       }
     }
 
-    if(args.orgId.startsWith(userPrefix)){
-      const hasDeletePermission = user._id === args.orgId
+    if (args.orgId.startsWith(userPrefix)) {
+      const hasDeletePermission = user.tokenIdentifier.includes(args.orgId);
 
-      if(!hasDeletePermission){
+      if (!hasDeletePermission) {
         throw new ConvexError("You do not have permission to delete this file");
       }
     }
 
-    await ctx.db.delete(file._id);
+    if (file.archived) {
+      await ctx.db.patch(file._id, { archived: false });
+    } else {
+      await ctx.db.patch(file._id, { archived: true });
+      const favorite = await ctx.db
+        .query("favorites")
+        .withIndex("by_userId_orgId_fileId", (q) =>
+          q
+            .eq("userId", user._id)
+            .eq("orgId", args.orgId)
+            .eq("fileId", file._id),
+        )
+        .first();
+      if (favorite) {
+        await ctx.db.delete(favorite._id);
+      }
+    }
+  },
+});
+
+export const deleteFiles = internalMutation({
+  handler: async (ctx) => {
+    const archivedFiles = await ctx.db
+      .query("files")
+      .withIndex("by_archived", (q) => q.eq("archived", true))
+      .collect();
+    await Promise.all(
+      archivedFiles.map(async (file) => {
+        await ctx.storage.delete(file.fileId);
+        return await ctx.db.delete(file._id);
+      }),
+    );
   },
 });
 

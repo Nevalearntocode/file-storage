@@ -8,12 +8,19 @@ import FileCard from "./file-card";
 import EmptyState from "../app/empty-state";
 import Loading from "../app/loading";
 import { useSearchParams } from "next/navigation";
+import useViewState from "@/hooks/use-view-state";
 
 type Props = {
-  isFavorite?: boolean;
+  route: "favorites" | "all" | "archived";
 };
 
-const FileList = ({ isFavorite = false }: Props) => {
+const FileList = ({ route = "all" }: Props) => {
+  const {
+    handleCardViewClick,
+    handleDatatableViewClick,
+    setViewState,
+    viewState,
+  } = useViewState("filesView", "card");
   const organization = useOrganizationContext();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search");
@@ -28,7 +35,7 @@ const FileList = ({ isFavorite = false }: Props) => {
       ? {
           orgId: organization.orgId,
           searchQuery: searchQuery ?? undefined,
-          isFavorite,
+          route,
         }
       : "skip",
   );

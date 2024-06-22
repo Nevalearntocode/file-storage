@@ -6,6 +6,12 @@ import { ConvexError, v } from "convex/values";
 export const userPrefix = "user"
 export const orgPrefix = "org"
 
+export const route = v.union(
+  v.literal("all"),
+  v.literal("favorites"),
+  v.literal("archived"),
+)
+
 export const generateImageUrl = query({
   args: {
     fileId: v.id("_storage"),

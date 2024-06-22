@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { MutationCtx, QueryCtx, internalMutation } from "./_generated/server";
+import { MutationCtx, QueryCtx, internalMutation, mutation, query } from "./_generated/server";
 import { role } from "./schema";
 
 export const getUser = async (
@@ -23,14 +23,34 @@ export const getUser = async (
 export const createUser = internalMutation({
   args: {
     tokenIdentifier: v.string(),
+    name: v.string(),
+    image: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("users", {
       tokenIdentifier: args.tokenIdentifier,
       orgs: [],
+      name: args.name,
+      image: args.image,
     });
   },
 });
+
+export const updateUser = internalMutation({
+  args: {
+    tokenIdentifier: v.string(),
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx, args.tokenIdentifier);
+
+    await ctx.db.patch(user._id, {
+      name: args.name,
+      image: args.image,
+    });
+  },
+})
 
 export const addOrgIdToUser = internalMutation({
   args: {
@@ -76,3 +96,22 @@ export const updateRoleInOrgForUser = internalMutation({
     });
   },
 });
+
+export const getFileUser = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_id", (q) => q.eq("_id", args.userId))
+      .first();
+    if (!user) {
+      throw new ConvexError("User not found");
+    }
+    return {
+      name: user.name,
+      image: user.image,
+    }
+  }
+})
