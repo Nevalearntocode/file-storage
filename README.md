@@ -28,16 +28,16 @@ npx convex dev
 
 ## Demos
 - Main page <br>
-  - ![Main page](demo/main-view.png)
+  - ![Main page](demos/main-view.png)
 - Table and filters <br>
-  - ![Table and filters](demo/table-and-filters-view.png)
+  - ![Table and filters](demos/table-and-filters-view.png)
 - Favorite <br>
-  - ![Favorite](demo/favorite-view.png)
+  - ![Favorite](demos/favorite-view.png)
 - Archive <br>
-  - ![Archive](demo/archive-view.png)
+  - ![Archive](demos/archive-view.png)
 - Upload <br>
-  - ![Upload](demo/upload-view.png)
+  - ![Upload](demos/upload-view.png)
 - Search and actions <br>
-  - ![Search and actions](demo/search-and-actions-view.png)
+  - ![Search and actions](demos/search-and-actions-view.png)
 - Restore <br>
-  - ![Restore](demo/restore-view.png) 
+  - ![Restore](demos/restore-view.png) 
