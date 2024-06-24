@@ -29,10 +29,7 @@ export default function RootLayout({
             <Toaster />
             <ModalProvider />
             <Header />
-            <main className="container mx-auto flex pt-12 gap-8">
-              <Sidebar />
-              {children}
-            </main>
+            {children}
           </OrganizationProvider>
         </ConvexClientProvider>
       </body>

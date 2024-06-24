@@ -15,8 +15,9 @@ import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Loading from "../app/loading";
+import UserDisplay from "./user-display";
 import { format } from "date-fns";
-import UserAvatar from "./user-avatar";
+import DownloadButton from "./download-button";
 
 type Props = {
   file: Doc<"files">;
@@ -33,9 +34,6 @@ const FileCard = ({ file }: Props) => {
   const fileUrl = useQuery(api.utils.generateImageUrl, {
     fileId: file.fileId,
   });
-  const user = useQuery(api.users.getFileUser, { userId: file.userId });
-
-  console.log(user);
 
   return (
     <Card className="flex flex-col justify-between">
@@ -81,16 +79,10 @@ const FileCard = ({ file }: Props) => {
         </div>
       </CardContent>
       <CardFooter className="mt-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <UserAvatar image={user?.image ?? ""} />
-          <div className="text-xs italic">
-            <p>By {user?.name}</p>
-            <p className="">at {format(file._creationTime, "dd/MM/yyyy")}</p>
-          </div>
-        </div>
-        <Button onClick={() => window.open(fileUrl ?? "", "_blank")}>
-          Download
-        </Button>
+        <UserDisplay userId={file.userId} state="card">
+          <p className="">at {format(file._creationTime, "dd/MM/yyyy")}</p>
+        </UserDisplay>
+        <DownloadButton fileId={file.fileId} state="card" />
       </CardFooter>
     </Card>
   );

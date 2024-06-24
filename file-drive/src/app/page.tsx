@@ -2,11 +2,24 @@
 
 import RouteHeader from "@/components/route-header";
 import FileList from "../components/file-list";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import useViewState from "@/hooks/use-view-state";
+import Sidebar from "./_components/sidebar";
+import { useSession } from "@clerk/nextjs";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const route = searchParams.get("route");
+  const { viewState, handleCardViewClick, handleDatatableViewClick } =
+    useViewState("filesView");
+
+  const router = useRouter();
+
+  const session = useSession();
+
+  if (!session.isSignedIn && session.isLoaded) {
+    router.push("/landing");
+  }
 
   const currentRoute: {
     name: string;
@@ -27,9 +40,17 @@ export default function Home() {
         };
 
   return (
-    <main className="flex w-full flex-col gap-12">
-      <RouteHeader label={currentRoute.name} />
-      <FileList route={currentRoute.value} />
+    <main className="container mx-auto flex gap-8 pt-12">
+      <Sidebar />
+      <div className="flex w-full flex-col gap-12">
+        <RouteHeader
+          label={currentRoute.name}
+          viewState={viewState}
+          handleCardViewClick={handleCardViewClick}
+          handleDatatableViewClick={handleDatatableViewClick}
+        />
+        <FileList route={currentRoute.value} viewState={viewState} />
+      </div>
     </main>
   );
 }

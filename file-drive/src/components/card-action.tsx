@@ -15,7 +15,7 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { Protect } from "@clerk/nextjs";
 import { userPrefix } from "../../convex/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type Props = {
   fileId: Id<"files">;
@@ -29,10 +29,11 @@ const CardAction = ({ fileId, orgId }: Props) => {
     fileId,
     orgId,
   });
-  const pathname = usePathname();
+  const searchParams = useSearchParams()
+  const pathname = searchParams.get("route");
   const { onOpen } = useAlertModal();
   const message =
-    pathname === "/archived"
+    pathname === "archived"
       ? "Are you sure you want to restore this file?"
       : "Are you sure you want to archive this file? Archived files will be deleted permanently after 24 hours.";
   const onConfirm = async () => {
@@ -45,7 +46,7 @@ const CardAction = ({ fileId, orgId }: Props) => {
         <MoreHorizontal className="h-5 w-5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {pathname !== "/archived" && (
+        {pathname !== "archived" && (
           <DropdownMenuItem
             className="cursor-pointer text-yellow-500 focus:text-yellow-600"
             onClick={() => toggleFavorite({ fileId, orgId })}
@@ -62,24 +63,24 @@ const CardAction = ({ fileId, orgId }: Props) => {
           </DropdownMenuItem>
         )}
         <Protect role="org:admin" fallback={<></>}>
-          {pathname !== "/archived" && <DropdownMenuSeparator />}
+          {pathname !== "archived" && <DropdownMenuSeparator />}
           <DropdownMenuItem
             className="cursor-pointer text-rose-500 focus:text-rose-600"
             onClick={() => onOpen({ onConfirm, message })}
           >
             <Trash className="mr-2 h-5 w-5" />
-            {pathname === "/archived" ? "Restore" : "Archive"}
+            {pathname === "archived" ? "Restore" : "Archive"}
           </DropdownMenuItem>
         </Protect>
         {orgId.startsWith(userPrefix) && (
           <>
-            {pathname !== "/archived" && <DropdownMenuSeparator />}
+            {pathname !== "archived" && <DropdownMenuSeparator />}
             <DropdownMenuItem
               className="cursor-pointer text-rose-500 focus:text-rose-600"
               onClick={() => onOpen({ onConfirm, message })}
             >
               <Trash className="mr-2 h-5 w-5" />
-              {pathname === "/archived" ? "Restore" : "Archive"}
+              {pathname === "archived" ? "Restore" : "Archive"}
             </DropdownMenuItem>
           </>
         )}

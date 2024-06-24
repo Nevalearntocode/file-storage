@@ -1,26 +1,23 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { useOrganizationContext } from "@/contexts/organization-context";
 import FileCard from "./file-card";
 import EmptyState from "../app/empty-state";
 import Loading from "../app/loading";
 import { useSearchParams } from "next/navigation";
-import useViewState from "@/hooks/use-view-state";
+import useViewState, { ViewState } from "@/hooks/use-view-state";
+import { DataTable } from "@/app/_components/datatable";
+import { columns } from "@/app/_components/column";
 
 type Props = {
   route: "favorites" | "all" | "archived";
+  viewState: ViewState;
 };
 
-const FileList = ({ route = "all" }: Props) => {
-  const {
-    handleCardViewClick,
-    handleDatatableViewClick,
-    setViewState,
-    viewState,
-  } = useViewState("filesView", "card");
+const FileList = ({ route = "all", viewState }: Props) => {
   const organization = useOrganizationContext();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search");
@@ -85,11 +82,16 @@ const FileList = ({ route = "all" }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {data.map((file) => (
-        <FileCard key={file._id} file={file} />
-      ))}
-    </div>
+    <>
+      {viewState === "card" && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {data.map((file) => (
+            <FileCard key={file._id} file={file} />
+          ))}
+        </div>
+      )}
+      {viewState === "table" && <DataTable columns={columns} data={data} />}
+    </>
   );
 };
 

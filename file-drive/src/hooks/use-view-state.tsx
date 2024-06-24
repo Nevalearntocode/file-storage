@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-function useViewState(storageKey: string, initialView: string) {
-  const [viewState, setViewState] = useState<string | null>(null);
+export type ViewState = "card" | "table" | null;
+
+function useViewState(
+  storageKey: string,
+  initialView: ViewState = null,
+) {
+  const [viewState, setViewState] = useState<ViewState>(null);
 
   useEffect(() => {
-    const storedView = localStorage.getItem(storageKey);
+    const storedView = localStorage.getItem(storageKey) as ViewState;
     if (storedView === null) {
       setViewState(initialView);
     } else {
@@ -18,13 +23,13 @@ function useViewState(storageKey: string, initialView: string) {
     }
   }, [viewState]);
 
-  const handleCardViewClick = useCallback(() => {
+  const handleCardViewClick = () => {
     setViewState("card");
-  }, []);
+  };
 
-  const handleDatatableViewClick = useCallback(() => {
+  const handleDatatableViewClick = () => {
     setViewState("table");
-  }, []);
+  };
 
   return {
     viewState,

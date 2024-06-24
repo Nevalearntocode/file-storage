@@ -25,7 +25,7 @@ http.route({
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.users.createUser, {
-            tokenIdentifier: `https://faithful-midge-7.clerk.accounts.dev|${result.data.id}`,
+            tokenIdentifier: `${process.env.CLERK_HOSTNAME}|${result.data.id}`,
             name: `${result.data.first_name ?? ""} ${
               result.data.last_name ?? ""
             }`,
@@ -34,7 +34,7 @@ http.route({
           break;
         case "user.updated":
           await ctx.runMutation(internal.users.updateUser, {
-            tokenIdentifier: `https://faithful-midge-7.clerk.accounts.dev|${result.data.id}`,
+            tokenIdentifier: `${process.env.CLERK_HOSTNAME}|${result.data.id}`,
             name: `${result.data.first_name ?? ""} ${
               result.data.last_name ?? ""
             }`,
@@ -44,7 +44,7 @@ http.route({
         case "organizationMembership.created":
           console.log(result.data);
           await ctx.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier: `https://faithful-midge-7.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === "org:admin" ? "admin" : "member",
           });
@@ -52,7 +52,7 @@ http.route({
         case "organizationMembership.updated":
           console.log(result.data);
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-            tokenIdentifier: `https://faithful-midge-7.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === "org:admin" ? "admin" : "member",
           });
